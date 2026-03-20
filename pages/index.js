@@ -454,31 +454,31 @@ function PopupOverlay({ popup, onDismiss }) {
 // ─── Video interrupt section ──────────────────────────────────────────────────
 function VideoInterruptSection() {
   const sectionRef = useRef(null);
-  const [inView, setInView]         = useState(false);
-  const [started, setStarted]       = useState(false);
-  const [currentPopup, setPopup]    = useState(null);
-  const timers = useRef([]);
+  const [currentPopup, setPopup] = useState(null);
+  const started = useRef(false);
+  const timers  = useRef([]);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setInView(true); },
-      { threshold: 0.4 }
+      ([entry]) => {
+        if (entry.isIntersecting && !started.current) {
+          started.current = true;
+          obs.disconnect();
+          POPUP_SEQUENCE.forEach(({ id, delay, duration, ...data }) => {
+            const t1 = setTimeout(() => setPopup({ id, ...data }), delay);
+            const t2 = setTimeout(() => setPopup(null), delay + duration);
+            timers.current.push(t1, t2);
+          });
+        }
+      },
+      { threshold: 0.3 }
     );
     if (sectionRef.current) obs.observe(sectionRef.current);
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+      timers.current.forEach(clearTimeout);
+    };
   }, []);
-
-  useEffect(() => {
-    if (inView && !started) {
-      setStarted(true);
-      POPUP_SEQUENCE.forEach(({ id, delay, duration, ...data }) => {
-        const t1 = setTimeout(() => setPopup({ id, ...data }), delay);
-        const t2 = setTimeout(() => setPopup(null), delay + duration);
-        timers.current.push(t1, t2);
-      });
-    }
-    return () => timers.current.forEach(clearTimeout);
-  }, [inView, started]);
 
   return (
     <section style={{ padding: "5rem 2rem", background: "#0a0a0a", borderTop: "1px solid rgba(223,235,247,0.06)", borderBottom: "1px solid rgba(223,235,247,0.06)" }}>
