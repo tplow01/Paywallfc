@@ -3,6 +3,77 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { CLUBS, getClubByKey } from "../lib/clubs";
 import { isBlackout, PRICES } from "../lib/calculator";
 
+// ─── Video interrupt popup sequence ──────────────────────────────────────────
+const POPUP_SEQUENCE = [
+  {
+    id: 1, delay: 1500, duration: 3800,
+    type: "subscribe", brand: "sky",
+    headline: "Subscribe to continue watching",
+    sub: "From £34.99/month. No contract required.",
+    cta: "Start your subscription",
+    dismiss: "Not now",
+  },
+  {
+    id: 2, delay: 6800, duration: 3200,
+    type: "blackout",
+    headline: "Match unavailable",
+    sub: "This fixture falls within the 14:45–17:15 Saturday blackout window under UK broadcasting regulations. No live coverage is permitted.",
+  },
+  {
+    id: 3, delay: 11400, duration: 1800,
+    type: "stat",
+    stat: "£349.90",
+    label: "Sky Sports. Every season.",
+  },
+  {
+    id: 4, delay: 14400, duration: 3200,
+    type: "subscribe", brand: "tnt",
+    headline: "This match is on TNT Sports",
+    sub: "Add TNT Sports to your package from £30.99/month.",
+    cta: "Upgrade now",
+    dismiss: "Cancel",
+  },
+  {
+    id: 5, delay: 18800, duration: 1600,
+    type: "stat",
+    stat: "113",
+    label: "Games blacked out. Every season.",
+  },
+  {
+    id: 6, delay: 21800, duration: 2800,
+    type: "expired",
+    headline: "Your free trial has ended",
+    sub: "Continue watching Premier League football from £34.99/month.",
+    cta: "Subscribe",
+    dismiss: "Log out",
+  },
+  {
+    id: 7, delay: 26000, duration: 1000,
+    type: "stat",
+    stat: "£309.90",
+    label: "TNT Sports. Per season.",
+  },
+  {
+    id: 8, delay: 27500, duration: 1000,
+    type: "stat",
+    stat: "£145.32",
+    label: "TV Licence. Still required.",
+  },
+  {
+    id: 9, delay: 29000, duration: 1000,
+    type: "stat",
+    stat: "30%",
+    label: "Of games. Unwatchable.",
+  },
+  {
+    id: 10, delay: 30500, duration: 6000,
+    type: "final",
+    stat: "£805.12",
+    label: "A year. And you still can't watch this.",
+    cta: "Sign the petition",
+  },
+];
+
 // ─── Constants ───────────────────────────────────────────────────────────────
 const SEASON_MONTHS    = 10;
 const SKY_MONTHLY      = PRICES.skyNow;     // £34.99
@@ -252,6 +323,203 @@ function MatchRow({ match, teamId, cpg }) {
         {blacked ? "—" : fmt(cpg)}
       </div>
     </div>
+  );
+}
+
+// ─── Video placeholder ────────────────────────────────────────────────────────
+function VideoPlaceholder() {
+  return (
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #1c2e1c 0%, #0d1a0d 45%, #090f09 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      {/* Pitch markings */}
+      <div style={{ position: "absolute", inset: 0, opacity: 0.18 }}>
+        <div style={{ position: "absolute", inset: "5%", border: "1px solid rgba(255,255,255,0.7)" }} />
+        <div style={{ position: "absolute", top: "5%", bottom: "5%", left: "50%", width: "1px", background: "rgba(255,255,255,0.7)" }} />
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "16%", paddingBottom: "16%", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.7)" }} />
+        <div style={{ position: "absolute", top: "22%", left: "5%", width: "14%", height: "56%", border: "1px solid rgba(255,255,255,0.7)", borderLeft: "none" }} />
+        <div style={{ position: "absolute", top: "22%", right: "5%", width: "14%", height: "56%", border: "1px solid rgba(255,255,255,0.7)", borderRight: "none" }} />
+        <div style={{ position: "absolute", top: "35%", left: "5%", width: "7%", height: "30%", border: "1px solid rgba(255,255,255,0.7)", borderLeft: "none" }} />
+        <div style={{ position: "absolute", top: "35%", right: "5%", width: "7%", height: "30%", border: "1px solid rgba(255,255,255,0.7)", borderRight: "none" }} />
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "6px", height: "6px", borderRadius: "50%", background: "rgba(255,255,255,0.7)" }} />
+      </div>
+      {/* Atmosphere vignette */}
+      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.55) 100%)" }} />
+      {/* Broadcast top bar */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, padding: "0.6rem 1rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "linear-gradient(180deg, rgba(0,0,0,0.75), transparent)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+          <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#e03535", boxShadow: "0 0 6px #e03535", animation: "livePulse 1.4s ease-in-out infinite" }} />
+          <span style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 700, fontSize: "0.65rem", letterSpacing: "0.2em", color: "#fff" }}>LIVE</span>
+          <span style={{ fontFamily: "'Kanit', sans-serif", fontSize: "0.6rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em" }}>PREMIER LEAGUE</span>
+        </div>
+        <span style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 700, fontSize: "0.65rem", color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em" }}>HD</span>
+      </div>
+      {/* Score bug */}
+      <div style={{ position: "absolute", top: "0.65rem", left: "50%", transform: "translateX(-50%)", background: "rgba(0,0,0,0.8)", padding: "0.35rem 0.9rem", display: "flex", alignItems: "center", gap: "0.65rem" }}>
+        <span style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.05em", color: "#fff" }}>HOME</span>
+        <span style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: "0.9rem", color: "#fed107", padding: "0 0.4rem", letterSpacing: "0.05em" }}>2 – 1</span>
+        <span style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.05em", color: "#fff" }}>AWAY</span>
+      </div>
+      {/* Match time */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0.6rem 1rem", background: "linear-gradient(0deg, rgba(0,0,0,0.75), transparent)" }}>
+        <span style={{ fontFamily: "'Kanit', sans-serif", fontSize: "0.6rem", letterSpacing: "0.15em", color: "rgba(255,255,255,0.3)" }}>67' — MATCH IN PROGRESS</span>
+      </div>
+      {/* Noise texture */}
+      <div style={{ position: "absolute", inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E\")", pointerEvents: "none" }} />
+      {/* Placeholder watermark */}
+      <span style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 700, fontSize: "0.6rem", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.06)", userSelect: "none" }}>Match Footage</span>
+    </div>
+  );
+}
+
+// ─── Popup overlay ────────────────────────────────────────────────────────────
+function PopupOverlay({ popup, onDismiss }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 30);
+    return () => clearTimeout(t);
+  }, []);
+
+  const base = { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", opacity: visible ? 1 : 0, transition: "opacity 0.18s ease" };
+
+  if (popup.type === "stat") {
+    return (
+      <div style={{ ...base, background: "rgba(8,8,8,0.93)", flexDirection: "column", gap: "0.75rem" }}>
+        <div style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: "clamp(4rem, 12vw, 8rem)", color: "#fed107", lineHeight: 0.88, letterSpacing: "-0.03em", textAlign: "center" }}>{popup.stat}</div>
+        <div style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 700, fontSize: "clamp(0.7rem, 2vw, 0.95rem)", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(223,235,247,0.45)", textAlign: "center" }}>{popup.label}</div>
+      </div>
+    );
+  }
+
+  if (popup.type === "final") {
+    return (
+      <div style={{ ...base, background: "rgba(8,8,8,0.97)", flexDirection: "column", gap: "1rem" }}>
+        <div style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 700, fontSize: "clamp(0.65rem, 1.5vw, 0.8rem)", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(223,235,247,0.3)" }}>Total annual cost</div>
+        <div style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: "clamp(3.5rem, 10vw, 7rem)", color: "#fed107", lineHeight: 0.88, letterSpacing: "-0.03em", textAlign: "center" }}>{popup.stat}</div>
+        <div style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 700, fontSize: "clamp(0.75rem, 2vw, 1rem)", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(223,235,247,0.5)", textAlign: "center", maxWidth: "320px", lineHeight: 1.5 }}>{popup.label}</div>
+        <a href="#petition" onClick={onDismiss} style={{ marginTop: "0.75rem", fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: "clamp(0.72rem, 1.8vw, 0.85rem)", letterSpacing: "0.16em", textTransform: "uppercase", padding: "0.9rem 2.25rem", background: "#fed107", color: "#121212", border: "none", cursor: "pointer", display: "inline-block", textDecoration: "none" }}>{popup.cta} →</a>
+      </div>
+    );
+  }
+
+  if (popup.type === "blackout") {
+    return (
+      <div style={{ ...base, background: "rgba(224,53,53,0.06)", backdropFilter: "blur(3px)" }}>
+        <div style={{ background: "#0e0e0e", border: "1px solid rgba(224,53,53,0.35)", padding: "2rem 2.25rem", maxWidth: "400px", width: "88%", textAlign: "center" }}>
+          <div style={{ width: "2.75rem", height: "2.75rem", borderRadius: "50%", background: "rgba(224,53,53,0.08)", border: "1px solid rgba(224,53,53,0.35)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.1rem", fontSize: "1.1rem", color: "#e03535" }}>⊘</div>
+          <div style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: "clamp(1.1rem, 3vw, 1.35rem)", textTransform: "uppercase", color: "#dfebf7", marginBottom: "0.65rem", letterSpacing: "0.02em" }}>{popup.headline}</div>
+          <div style={{ fontSize: "clamp(0.78rem, 2vw, 0.85rem)", color: "rgba(223,235,247,0.4)", lineHeight: 1.75, marginBottom: "1.5rem" }}>{popup.sub}</div>
+          <button onClick={onDismiss} style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 700, fontSize: "0.75rem", letterSpacing: "0.15em", textTransform: "uppercase", background: "none", border: "1px solid rgba(223,235,247,0.12)", color: "rgba(223,235,247,0.35)", padding: "0.55rem 1.4rem", cursor: "pointer" }}>Close</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (popup.type === "subscribe") {
+    const brandColor = popup.brand === "sky" ? "#0072c6" : "#f0a500";
+    const brandName  = popup.brand === "sky" ? "SKY SPORTS" : "TNT SPORTS";
+    return (
+      <div style={{ ...base, backdropFilter: "blur(4px)", background: "rgba(0,0,0,0.78)" }}>
+        <div style={{ background: "#111", border: `1px solid ${brandColor}35`, maxWidth: "390px", width: "88%", overflow: "hidden" }}>
+          <div style={{ background: brandColor, padding: "0.65rem 1.1rem", fontFamily: "'Kanit', sans-serif", fontWeight: 800, fontSize: "0.72rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "#fff" }}>{brandName}</div>
+          <div style={{ padding: "1.6rem 1.4rem" }}>
+            <div style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: "clamp(1rem, 3vw, 1.2rem)", color: "#dfebf7", marginBottom: "0.55rem" }}>{popup.headline}</div>
+            <div style={{ fontSize: "clamp(0.78rem, 2vw, 0.84rem)", color: "rgba(223,235,247,0.4)", lineHeight: 1.65, marginBottom: "1.4rem" }}>{popup.sub}</div>
+            <div style={{ display: "flex", gap: "0.65rem", alignItems: "center" }}>
+              <button style={{ flex: 1, padding: "0.7rem", background: brandColor, color: "#fff", fontFamily: "'Kanit', sans-serif", fontWeight: 800, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", cursor: "pointer" }}>{popup.cta}</button>
+              <button onClick={onDismiss} style={{ padding: "0.7rem 0.9rem", background: "none", border: "1px solid rgba(223,235,247,0.1)", color: "rgba(223,235,247,0.28)", fontFamily: "'Kanit', sans-serif", fontSize: "0.75rem", cursor: "pointer" }}>{popup.dismiss}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (popup.type === "expired") {
+    return (
+      <div style={{ ...base, background: "rgba(0,0,0,0.9)", backdropFilter: "blur(5px)" }}>
+        <div style={{ background: "#161616", border: "1px solid rgba(223,235,247,0.07)", maxWidth: "370px", width: "88%", padding: "1.9rem 1.6rem", textAlign: "center" }}>
+          <div style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: "clamp(1.1rem, 3vw, 1.25rem)", color: "#dfebf7", marginBottom: "0.5rem" }}>{popup.headline}</div>
+          <div style={{ fontSize: "clamp(0.78rem, 2vw, 0.84rem)", color: "rgba(223,235,247,0.38)", lineHeight: 1.65, marginBottom: "1.6rem" }}>{popup.sub}</div>
+          <div style={{ display: "flex", gap: "0.6rem" }}>
+            <button style={{ flex: 1, padding: "0.75rem", background: "#dfebf7", color: "#121212", fontFamily: "'Kanit', sans-serif", fontWeight: 800, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", cursor: "pointer" }}>{popup.cta}</button>
+            <button onClick={onDismiss} style={{ flex: 1, padding: "0.75rem", background: "none", border: "1px solid rgba(223,235,247,0.1)", color: "rgba(223,235,247,0.28)", fontFamily: "'Kanit', sans-serif", fontSize: "0.75rem", cursor: "pointer" }}>{popup.dismiss}</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+// ─── Video interrupt section ──────────────────────────────────────────────────
+function VideoInterruptSection() {
+  const sectionRef = useRef(null);
+  const [inView, setInView]         = useState(false);
+  const [started, setStarted]       = useState(false);
+  const [currentPopup, setPopup]    = useState(null);
+  const timers = useRef([]);
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setInView(true); },
+      { threshold: 0.4 }
+    );
+    if (sectionRef.current) obs.observe(sectionRef.current);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (inView && !started) {
+      setStarted(true);
+      POPUP_SEQUENCE.forEach(({ id, delay, duration, ...data }) => {
+        const t1 = setTimeout(() => setPopup({ id, ...data }), delay);
+        const t2 = setTimeout(() => setPopup(null), delay + duration);
+        timers.current.push(t1, t2);
+      });
+    }
+    return () => timers.current.forEach(clearTimeout);
+  }, [inView, started]);
+
+  return (
+    <section style={{ padding: "5rem 2rem", background: "#0a0a0a", borderTop: "1px solid rgba(223,235,247,0.06)", borderBottom: "1px solid rgba(223,235,247,0.06)" }}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+        {/* Header */}
+        <div style={{ marginBottom: "2.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
+          <div>
+            <div style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 600, fontSize: "0.73rem", letterSpacing: "0.3em", textTransform: "uppercase", color: "#e03535", marginBottom: "0.75rem" }}>The Experience</div>
+            <h2 style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: "clamp(2rem, 5vw, 3.2rem)", lineHeight: 0.92, textTransform: "uppercase", letterSpacing: "-0.01em" }}>
+              Every time<br />you try to watch.
+            </h2>
+          </div>
+          <p style={{ fontSize: "0.9rem", lineHeight: 1.8, color: "rgba(223,235,247,0.4)", maxWidth: "320px" }}>
+            This is what it actually feels like to be a football fan in 2026. Pay everything. Watch less.
+          </p>
+        </div>
+
+        {/* Video player */}
+        <div ref={sectionRef} style={{ position: "relative", aspectRatio: "16/9", maxWidth: "860px", margin: "0 auto", background: "#050505", overflow: "hidden", boxShadow: "0 0 80px rgba(0,0,0,0.8)" }}>
+          {/* Swap in your video here — replace VideoPlaceholder with: */}
+          {/* <video autoPlay muted loop playsInline style={{ position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover" }}> */}
+          {/*   <source src="/match-footage.mp4" type="video/mp4" /> */}
+          {/* </video> */}
+          <VideoPlaceholder />
+
+          {/* Scanlines */}
+          <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px)", pointerEvents: "none", zIndex: 1 }} />
+
+          {/* Popup layer */}
+          {currentPopup && (
+            <div style={{ position: "absolute", inset: 0, zIndex: 10 }}>
+              <PopupOverlay key={currentPopup.id} popup={currentPopup} onDismiss={() => setPopup(null)} />
+            </div>
+          )}
+        </div>
+
+        <p style={{ textAlign: "center", marginTop: "1.25rem", fontSize: "0.73rem", color: "rgba(223,235,247,0.18)", letterSpacing: "0.1em" }}>
+          Scroll into view to play · Popups appear automatically
+        </p>
+      </div>
+    </section>
   );
 }
 
@@ -664,6 +932,12 @@ export default function Landing() {
 
         /* ── Sub btn active ── */
         .sub-btn:active { transform: translateY(1px) scale(0.99); }
+
+        /* ── Live dot pulse ── */
+        @keyframes livePulse {
+          0%, 100% { opacity: 1; box-shadow: 0 0 6px #e03535; }
+          50% { opacity: 0.4; box-shadow: 0 0 2px #e03535; }
+        }
       `}</style>
 
       {/* NAV */}
@@ -761,6 +1035,9 @@ export default function Landing() {
           ))}
         </div>
       </div>
+
+      {/* VIDEO INTERRUPT */}
+      <VideoInterruptSection />
 
       {/* STATS */}
       <section className="stats" id="costs">
