@@ -715,14 +715,13 @@ export default function Landing() {
       </Head>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,600;0,700;0,800;0,900;1,800;1,900&display=swap');
         @font-face {
           font-family: 'Mona Sans';
           src: url('https://github.githubassets.com/static/fonts/mona-sans.woff2') format('woff2');
           font-weight: 100 900; font-style: normal; font-display: swap;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body {
           background: #121212; color: #dfebf7;
