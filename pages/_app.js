@@ -1,4 +1,5 @@
 // pages/_app.js
+import "@fontsource-variable/mona-sans";
 import "../styles/globals.css";
 import Head from "next/head";
 

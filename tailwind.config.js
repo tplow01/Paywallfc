@@ -5,16 +5,18 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          yellow: "#FFD700",
-          dark:   "#0A0A0A",
-          panel:  "#141414",
+          yellow: "#fed107",
+          dark:   "#111011",
+          panel:  "#1a1a1a",
           border: "#262626",
           muted:  "#71717A",
+          text:   "#dfebf7",
+          red:    "#e03535",
         },
       },
       fontFamily: {
-        sans:    ["Inter", "sans-serif"],
-        display: ["Montserrat", "sans-serif"],
+        sans:    ["'Mona Sans Variable'", "Inter", "sans-serif"],
+        display: ["Kanit", "sans-serif"],
       },
     },
   },

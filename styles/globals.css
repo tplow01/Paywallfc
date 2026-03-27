@@ -7,13 +7,13 @@ html { scroll-behavior: smooth; }
 a { color: inherit; text-decoration: none; }
 
 body {
-  background-color: #0A0A0A;
-  color: white;
+  background-color: #111011;
+  color: #dfebf7;
   -webkit-font-smoothing: antialiased;
 }
 
 ::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #0A0A0A; }
+::-webkit-scrollbar-track { background: #111011; }
 ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #71717A; }
 

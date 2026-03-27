@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@fontsource-variable/mona-sans": "^5.2.8",
     "@gsap/react": "^2.1.2",
     "gsap": "^3.14.2",
     "next": "14.2.3",
