@@ -479,9 +479,9 @@ export default function Landing() {
       }}>
         <div className="max-w-[1440px] mx-auto px-6 h-[60px] flex items-center justify-between gap-6">
 
-          {/* Badge only */}
+          {/* Wordmark */}
           <a href="/" className="shrink-0" aria-label="Paywall FC — home">
-            <img src="/badge.png" alt="" className="w-9 h-9 object-contain" />
+            <img src="/wordmark.png" alt="Paywall FC" className="h-8 object-contain" />
           </a>
 
           {/* Right: nav links + CTA */}
@@ -521,33 +521,81 @@ export default function Landing() {
         )}
       </header>
 
-      {/* ── HERO (VIDEO) ── */}
-      <section className="border-b" style={{ borderColor: "rgba(223,235,247,0.07)" }}>
-        <div className="max-w-[1440px] mx-auto px-6 py-16 pb-10 grid grid-cols-12 gap-6">
-          <div className="col-span-12">
-            <h1 className="font-display font-black uppercase text-brand-text mb-4" style={{ fontSize: "clamp(2.8rem,6vw,72px)", letterSpacing: "-0.02em", lineHeight: "1.05" }}>
-              Your Club.<br />Their Profit.
+      {/* ── HERO ── */}
+      <section style={{ borderBottom: "1px solid rgba(223,235,247,0.07)" }}>
+        <div className="max-w-5xl mx-auto px-6 py-10">
+
+          {/* Match info card */}
+          <div className="p-8 mb-6 text-center" style={{
+            background: "#1a1a1a",
+            border: "1px solid rgba(254,209,7,0.18)",
+          }}>
+            <h1 className="font-display font-black text-brand-text mb-3" style={{
+              fontSize: "clamp(1.8rem,4vw,44px)",
+              letterSpacing: "-0.02em",
+              lineHeight: "1.05",
+            }}>
+              Premier League Live Stream
             </h1>
-            <p className="text-[16px] leading-[28px] mb-8 max-w-2xl" style={{ color: "rgba(223,235,247,0.55)" }}>
-              England is one of the most expensive places on earth to follow your club — and you still miss roughly a third of the Premier League on legal TV.{" "}
-              <span className="text-brand-text/90">Paywall FC</span> exists to change that before the{" "}
-              <strong className="font-semibold text-brand-text">2029</strong> broadcast deal sets the next decade of prices.
-            </p>
-            <div className="mb-4">
-              <div className="font-display font-semibold text-xs tracking-[0.3em] uppercase flex items-center gap-2"
-                style={{ color: "#e03535" }}>
-                <div className="w-2 h-2 rounded-full" aria-hidden="true" style={{ background: "#e03535", animation: "livePulse 1.4s ease-in-out infinite" }} />
-                The Experience
-              </div>
-              <p className="font-display text-[10px] tracking-[0.22em] uppercase mt-2 max-w-xl" style={{ color: "rgba(223,235,247,0.28)" }}>
-                Simulated match night — paywalls, blackouts, full-screen price tags. Not highlights. Interruptions.
-              </p>
+            <div className="font-display font-semibold text-sm mb-2" style={{ color: "#fed107" }}>
+              Saturday · 3:00 PM BST · Premier League 2025/26
             </div>
-            <VideoSection />
-            <p className="font-display text-xs tracking-widest mt-3 max-w-2xl" style={{ color: "rgba(223,235,247,0.28)" }}>
-              Plays when this panel enters view · If this felt familiar, scroll — your own numbers are next.
-            </p>
+            <div className="text-sm mb-1" style={{ color: "rgba(223,235,247,0.4)" }}>
+              Premier League · 2025/26
+            </div>
+            <div className="text-sm italic" style={{ color: "rgba(223,235,247,0.28)" }}>
+              📍 Behind a Paywall
+            </div>
           </div>
+
+          {/* CTA bar */}
+          <div className="py-3 px-6 mb-5 text-center font-display font-black text-sm tracking-[0.2em] uppercase" style={{
+            background: "linear-gradient(90deg, #fed107 0%, #ffd42a 100%)",
+            color: "#121212",
+          }}>
+            Your Club. Their Profit. — Sign the Petition →
+          </div>
+
+          {/* Stream placeholder */}
+          <div className="aspect-video mb-5 flex items-center justify-center" style={{
+            background: "#000",
+            border: "1px solid rgba(254,209,7,0.22)",
+          }}>
+            <div className="text-center select-none">
+              <div className="font-display text-[10px] tracking-[0.35em] uppercase" style={{ color: "rgba(223,235,247,0.12)" }}>
+                Stream Placeholder
+              </div>
+            </div>
+          </div>
+
+          {/* Backup stream servers */}
+          <div className="p-6 mb-6 text-center" style={{
+            background: "#1a1a1a",
+            border: "1px solid rgba(223,235,247,0.07)",
+          }}>
+            <div className="font-display font-black text-sm tracking-[0.2em] uppercase mb-5" style={{ color: "#fed107" }}>
+              Backup Stream Servers
+            </div>
+            <div className="flex flex-wrap gap-3 justify-center">
+              {["Main Server", "Server 2 (HD)", "Server 3", "Server 4"].map((server, i) => (
+                <button key={server} className="font-display font-bold text-sm px-6 py-2.5 cursor-pointer transition-opacity hover:opacity-80" style={
+                  i === 0
+                    ? { background: "#fed107", color: "#121212", border: "1px solid #fed107" }
+                    : { background: "transparent", color: "rgba(223,235,247,0.55)", border: "1px solid rgba(223,235,247,0.18)" }
+                }>
+                  {server}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Copy */}
+          <p className="text-[15px] leading-[27px] text-center mx-auto max-w-2xl" style={{ color: "rgba(223,235,247,0.45)" }}>
+            England is one of the most expensive places on earth to follow your club — and you still miss roughly a third of the Premier League on legal TV.{" "}
+            <span style={{ color: "rgba(223,235,247,0.8)" }}>Paywall FC</span> exists to change that before the{" "}
+            <strong className="font-semibold" style={{ color: "#dfebf7" }}>2029</strong> broadcast deal sets the next decade of prices.
+          </p>
+
         </div>
       </section>
 
