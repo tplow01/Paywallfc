@@ -188,7 +188,7 @@ function VideoSection() {
       {/* Real video */}
       <video
         className="absolute inset-0 w-full h-full object-cover"
-        src="/penalty.mov"
+        src="/PENALTY.mp4"
         autoPlay
         muted
         playsInline
