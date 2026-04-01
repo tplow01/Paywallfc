@@ -16,7 +16,7 @@ module.exports = {
       },
       fontFamily: {
         sans:    ["'Mona Sans Variable'", "Inter", "sans-serif"],
-        display: ["Kanit", "sans-serif"],
+        display: ["var(--font-kanit)", "sans-serif"],
       },
     },
   },
