@@ -38,7 +38,7 @@ body {
 
 /* Ticker: seamless loop; slower when user prefers reduced motion */
 .ticker-track {
-  animation: tick 28s linear infinite;
+  animation: tick 60s linear infinite;
 }
 
 .petition-count-glow {

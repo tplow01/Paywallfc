@@ -156,48 +156,75 @@ function PopupOverlay({ popup, onDismiss }) {
 
 // ─── Video section ────────────────────────────────────────────────────────────
 function VideoSection() {
-  const sectionRef  = useRef(null);
+  const videoRef   = useRef(null);
   const [popup, setPopup] = useState(null);
-  const started     = useRef(false);
-  const timers      = useRef([]);
+  const [showPlayOverlay, setShowPlayOverlay] = useState(true);
+  const timers     = useRef([]);
 
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return undefined;
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !started.current) {
-        started.current = true;
-        obs.disconnect();
-        POPUP_SEQUENCE.forEach(({ id, delay, duration, ...data }) => {
-          const t1 = setTimeout(() => setPopup({ id, ...data }), delay);
-          const t2 = setTimeout(() => setPopup(null), delay + duration);
-          timers.current.push(t1, t2);
-        });
-      }
-    }, { threshold: 0.15 });
-    obs.observe(el);
-    return () => {
-      obs.disconnect();
-      timers.current.forEach(clearTimeout);
-      timers.current = [];
-    };
+  const clearPopupTimers = useCallback(() => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
   }, []);
 
+  const schedulePopups = useCallback(() => {
+    clearPopupTimers();
+    POPUP_SEQUENCE.forEach(({ id, delay, duration, ...data }) => {
+      const t1 = setTimeout(() => setPopup({ id, ...data }), delay);
+      const t2 = setTimeout(() => setPopup(null), delay + duration);
+      timers.current.push(t1, t2);
+    });
+  }, [clearPopupTimers]);
+
+  const handlePlayClick = useCallback(() => {
+    setShowPlayOverlay(false);
+    schedulePopups();
+    const v = videoRef.current;
+    if (v) v.play().catch(() => {});
+  }, [schedulePopups]);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return undefined;
+    const onEnded = () => {
+      clearPopupTimers();
+      setPopup(null);
+      setShowPlayOverlay(true);
+      v.pause();
+      v.currentTime = 0;
+    };
+    v.addEventListener("ended", onEnded);
+    return () => {
+      v.removeEventListener("ended", onEnded);
+      clearPopupTimers();
+    };
+  }, [clearPopupTimers]);
+
   return (
-    <div ref={sectionRef} className="relative aspect-video bg-black overflow-hidden rounded-xl" style={{ border: "2px solid #fed107", boxShadow: "0 0 32px rgba(254,209,7,0.2), 0 0 64px rgba(254,209,7,0.06)" }}>
+    <div className="relative aspect-video bg-black overflow-hidden rounded-xl" style={{ border: "2px solid #fed107", boxShadow: "0 0 32px rgba(254,209,7,0.2), 0 0 64px rgba(254,209,7,0.06)" }}>
       {/* Real video */}
       <video
+        ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
-        src="/PENALTY.mp4"
-        autoPlay
+        src="/Penalty2.mp4"
         muted
         playsInline
-        loop
         preload="auto"
       />
 
       {/* Scanlines */}
       <div className="absolute inset-0 pointer-events-none z-10" style={{ backgroundImage: "repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.04) 3px,rgba(0,0,0,0.04) 4px)" }} />
+
+      {/* Play / replay: black screen + picon until user starts playback */}
+      {showPlayOverlay && (
+        <button
+          type="button"
+          className="absolute inset-0 z-[15] flex cursor-pointer items-center justify-center bg-black border-0 p-0"
+          onClick={handlePlayClick}
+          aria-label="Play video"
+        >
+          <img src="/picon.png" alt="" className="w-24 h-24 sm:w-28 sm:h-28 object-contain" />
+        </button>
+      )}
 
       {/* Popup layer */}
       {popup && (
@@ -225,7 +252,9 @@ function CalculatorSection() {
       if (!res.ok) throw new Error("API error " + res.status);
       const data = await res.json();
       setMatches(data.matches || []);
-    } catch (e) { setError(e.message); }
+    } catch (e) {
+      setError(e.message);
+    }
     finally     { setLoading(false); }
   }, []);
 
@@ -706,7 +735,7 @@ export default function Landing() {
 
       {/* ── FAN VOICES ── */}
       <section style={{ borderTop: "1px solid rgba(223,235,247,0.07)", borderBottom: "1px solid rgba(223,235,247,0.07)" }}>
-        <div className="max-w-[1440px] mx-auto px-6 py-24">
+        <div className="max-w-[1440px] mx-auto px-6 pt-16 pb-24">
           <div className="grid grid-cols-12 gap-6 mb-12">
             <div className="col-span-12 lg:col-span-5">
               <div className="font-display font-semibold text-[11px] tracking-[3.5px] uppercase text-brand-yellow mb-4">What we heard</div>
@@ -720,18 +749,18 @@ export default function Landing() {
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-12 gap-6">
+          <div className="grid grid-cols-12 gap-6 min-w-0">
             {[
               { text: `"I pay for everything. Still missed games. Sick to my stomach, honestly. They know we'll keep paying, so they just keep taking."`, attr: "Adam, Arsenal supporter, 23" },
               { text: `"It's not just streaming — kits, tickets, subscriptions. Football's becoming inaccessible to younger kids. The people running this game are out of touch."`, attr: "Lewis, Southampton supporter, 23" },
               { text: `"Extortionate, expensive, poor. That's all I've got left to say. I've run out of ways to be angry about it."`, attr: "Harry, Arsenal supporter, 24" },
             ].map((q, i) => (
-              <div key={i} className="col-span-12 md:col-span-4 pl-6 pr-5 py-6" style={{
+              <div key={i} className="col-span-12 md:col-span-4 pl-6 pr-5 py-6 min-w-0" style={{
                 borderLeft: "3px solid rgba(254,209,7,0.45)",
                 background: "rgba(254,209,7,0.02)",
               }}>
-                <p className="text-[17px] leading-[30px] mb-4 italic" style={{ color: "rgba(223,235,247,0.82)" }}>{q.text}</p>
-                <p className="font-display font-semibold text-[11px] tracking-[1.4px] uppercase" style={{ color: "rgba(223,235,247,0.35)" }}>— {q.attr}</p>
+                <p className="text-[17px] leading-[30px] mb-4 italic break-words" style={{ color: "rgba(223,235,247,0.82)" }}>{q.text}</p>
+                <p className="font-display font-semibold text-[11px] tracking-[1.4px] uppercase break-words" style={{ color: "rgba(223,235,247,0.35)" }}>— {q.attr}</p>
               </div>
             ))}
           </div>
@@ -749,7 +778,7 @@ export default function Landing() {
               A fictional club.<br />A very real<br />fight.
             </h2>
           </div>
-          <div className="col-span-12 lg:col-span-7 lg:flex lg:items-end mb-16">
+          <div className="col-span-12 lg:col-span-7 lg:flex lg:items-start mb-16">
             <p className="text-[15.5px] leading-[28px]" style={{ color: "rgba(223,235,247,0.6)" }}>
               Independent of clubs and broadcasters, we publish what it really costs to watch football in England — and push for fan voice and fair access <strong className="font-semibold text-brand-text/85">before</strong> the 2029 deal is signed. Decade-long rights renewals shouldn&apos;t land without the people who pay.
             </p>
@@ -835,6 +864,15 @@ export default function Landing() {
             Public count · Private inbox — every name adds leverage
           </div>
 
+          <div className="text-center mb-10">
+            <div className="font-display font-black uppercase text-brand-text" style={{ fontSize: "clamp(2rem,6vw,56px)", letterSpacing: "-0.02em", lineHeight: "1.05" }}>
+              The Super League collapsed in 48 hours.
+            </div>
+            <div className="font-display font-black uppercase text-brand-yellow" style={{ fontSize: "clamp(2rem,6vw,56px)", letterSpacing: "-0.02em", lineHeight: "1.05" }}>
+              This can too.
+            </div>
+          </div>
+
           {submitted ? (
             <div className="p-10" style={{ border: "1px solid rgba(254,209,7,0.2)", background: "rgba(254,209,7,0.05)" }}>
               <img src="/badge.png" alt="" className="w-16 h-16 object-contain mx-auto mb-4" style={{ filter: "drop-shadow(0 0 12px rgba(254,209,7,0.35))" }} />
@@ -890,10 +928,18 @@ export default function Landing() {
             <span className="font-display font-extrabold text-brand-yellow text-[16px] tracking-[0.96px]">PAYWALL FC</span>
           </div>
           <p className="col-span-12 md:col-span-6 text-[12.5px] leading-5 text-center" style={{ color: "rgba(223,235,247,0.22)" }}>
-            A campaign project. Not affiliated with the Premier League, Sky, TNT, or any professional football club.
+            Paywall FC is an independent fan campaign. Not affiliated with the Premier League, Sky, TNT, or any professional football club.
           </p>
-          <div className="col-span-12 md:col-span-3 flex justify-end gap-6">
-            {[["#problem","Problem"],["#costs","Costs"],["#calculator","Calculator"],["#petition","Petition"]].map(([href, label]) => (
+          <div className="col-span-12 md:col-span-3 flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-3">
+            {[
+              ["#problem","Problem"],
+              ["#costs","Costs"],
+              ["#calculator","Calculator"],
+              ["#petition","Petition"],
+              ["mailto:press@paywallfc.com", "Press & Contact"],
+              ["https://x.com/paywallfc", "Twitter/X"],
+              ["https://instagram.com/paywallfc", "Instagram"],
+            ].map(([href, label]) => (
               <a key={href} href={href} className="font-display font-semibold text-xs tracking-[1.2px] uppercase transition-colors"
                 style={{ color: "rgba(223,235,247,0.28)" }}
                 onMouseEnter={e => e.target.style.color = "#fed107"}
