@@ -18,6 +18,16 @@ const PINT_PRICE   = 6.20;
 // ─── Nav links ────────────────────────────────────────────────────────────────
 const NAV_LINKS = [["#calculator","Calculator"],["#reveal","The Reveal"],["#manifesto","Manifesto"]];
 
+// ─── Money strip copy ─────────────────────────────────────────────────────────
+const STRIP_ITEMS = [
+  "113 MATCHES REDACTED.",
+  "GREEDY BASTARDS.",
+  "3 SUBSCRIPTIONS. 1 SPORT.",
+  "PRICED OUT.",
+  "30% LEGALLY UNWATCHABLE.",
+  "ENOUGH IS ENOUGH.",
+];
+
 // ─── Shared form input props ──────────────────────────────────────────────────
 const INPUT_CLS     = "w-full px-5 py-4 font-sans text-[14px] outline-none transition-colors placeholder-[rgba(223,235,247,0.22)] rounded-none";
 const INPUT_STYLE   = { background: "rgba(223,235,247,0.04)", border: "1px solid rgba(223,235,247,0.1)", color: "#dfebf7" };
@@ -177,7 +187,7 @@ function CalculatorSection({ onResultChange }) {
 
   return (
     <section id="calculator" style={{ borderTop: "1px solid rgba(223,235,247,0.07)" }}>
-      <div className="max-w-[1440px] mx-auto px-6 py-24">
+      <div className="max-w-[1440px] mx-auto px-6 py-24 sticky bottom-0">
 
         {/* ── Section header — full width above the interactive grid ── */}
         <div className="grid grid-cols-12 gap-6 mb-10">
@@ -197,7 +207,7 @@ function CalculatorSection({ onResultChange }) {
         <div className="grid grid-cols-12 gap-6 items-start">
 
           {/* ── LEFT: sticky panel with picker + stats ── */}
-          <div className="col-span-12 lg:col-span-5 lg:sticky lg:top-[72px]">
+          <div className="col-span-12 lg:col-span-5 lg:sticky lg:top-[140px]">
 
             {/* Club picker */}
             <div className="relative mb-6">
@@ -424,20 +434,6 @@ export default function Landing() {
           </div>
         </div>
 
-        <div className="overflow-hidden border-t border-black/15 py-1.5">
-          <div className="nav-marquee-track flex whitespace-nowrap">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="flex">
-                {["ENOUGH IS ENOUGH", "STOP THE BLACKOUT", "FANS OVER PROFIT"].map((item, j) => (
-                  <span key={j} className="px-6 font-display font-black text-[11px] tracking-[2px] uppercase text-black">
-                    {item} •
-                  </span>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Mobile menu */}
         {mobileOpen && (
           <div className="md:hidden border-t" style={{ borderColor: "rgba(0,0,0,0.12)", background: "#fed107" }}>
@@ -459,26 +455,14 @@ export default function Landing() {
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 md:col-span-10 md:col-start-2 lg:col-span-8 lg:col-start-3 flex flex-col gap-4">
 
-              {/* Match info card */}
+              {/* Hero copy */}
               <div className="rounded-xl px-5 py-6 sm:p-6 text-center" style={{ background: "#181820", border: "1px solid rgba(223,235,247,0.08)" }}>
-                <h1 className="font-display font-black text-brand-text mb-2" style={{ fontSize: "clamp(1.1rem,2.8vw,1.75rem)", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
-                  Premier League 2025/26 &mdash; Live &amp; Behind the Paywall
+                <h1 className="font-display font-black uppercase text-brand-text mb-3" style={{ fontSize: "clamp(1.4rem,3.8vw,2.4rem)", letterSpacing: "-0.02em", lineHeight: 1.05 }}>
+                  FOR THE FANS. AGAINST THE SYSTEM
                 </h1>
-                <div className="font-display font-bold text-sm mb-1" style={{ color: "#fed107" }}>
-                  Saturday, 3:00 PM GMT &bull; BLACKOUT WINDOW
-                </div>
-                <div className="text-sm mb-2" style={{ color: "rgba(223,235,247,0.4)" }}>
-                  Premier League &bull; 2025/26 Season
-                </div>
-                <div className="text-xs italic" style={{ color: "rgba(223,235,247,0.28)" }}>
-                  📍 Costs UK fans £775.13/season — legally
-                </div>
-              </div>
-
-              {/* Yellow banner */}
-              <div className="rounded-xl px-4 py-3 text-center font-display font-bold text-xs sm:text-sm tracking-widest uppercase"
-                style={{ background: "#fed107", color: "#121212" }}>
-                UK football coverage &amp; the real cost of watching ⚡
+                <p className="text-sm sm:text-[15px]" style={{ color: "rgba(223,235,247,0.58)" }}>
+                  Our goal to bring the premier league broadcasting back to the fans.
+                </p>
               </div>
 
               {/* Video player */}
@@ -489,26 +473,34 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── TICKER ── */}
-      <div className="overflow-hidden py-[14px]" style={{ background: "linear-gradient(90deg, #fed107, #ffd42a)" }}>
-        <div className="money-strip-track flex whitespace-nowrap">
-          {[...Array(2)].map((_, i) => (
-            <div key={i} className="flex">
-              {[
-                "Sky £34.99/mo ·",
-                "TNT £30.99/mo ·",
-                "TV licence £14.54/mo ·",
-                "~£775/season — PL only ·",
-                "113 games blacked out every season ·",
-                "~30% of the season legally unwatchable ·",
-                "2029 rights deal — fans need a seat at the table ·",
-              ].map((item, j) => (
-                <span key={j} className="font-display font-extrabold text-[15px] tracking-[2.1px] uppercase px-9" style={{ color: "#121212" }}>
-                  {item}
-                </span>
-              ))}
-            </div>
-          ))}
+      {/* ── MONEY STRIP (STICKY) ── */}
+      <div className="sticky top-[72px] z-20">
+        <div className="overflow-hidden py-[14px]" style={{ background: "linear-gradient(90deg, #fed107, #ffd42a)" }}>
+          <div className="money-strip-track flex whitespace-nowrap">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="money-strip-set flex items-center">
+                {STRIP_ITEMS.map((item, j) => (
+                  <div key={j} className="flex items-center">
+                    <span
+                      className="font-display font-extrabold text-[15px] tracking-[2.1px] uppercase px-6"
+                      style={{ color: "#121212" }}
+                    >
+                      {item}
+                    </span>
+                    <img
+                      src="/Picon.svg"
+                      alt="Paywall FC icon"
+                      aria-hidden="false"
+                      className="h-6 w-6 mx-5 shrink-0"
+                      style={{
+                        filter: "drop-shadow(0 0 3px rgba(0,0,0,0.3))",
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -628,7 +620,7 @@ export default function Landing() {
 
       {/* ── PETITION ── */}
       <section id="petition" style={{ borderTop: "1px solid rgba(223,235,247,0.07)" }}>
-        <div className="max-w-[1440px] mx-auto px-6 py-24 grid grid-cols-12 gap-6">
+        <div className="max-w-[1440px] mx-auto px-6 py-24 grid grid-cols-12 gap-6 relative z-30">
           <div className="col-span-12 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4 text-center">
           {/* Eyebrow */}
           <div className="flex items-center justify-center gap-3 mb-10">

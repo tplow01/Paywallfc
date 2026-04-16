@@ -38,7 +38,15 @@ body {
 
 /* Fast tactical motion strips */
 .money-strip-track {
-  animation: tick 14s linear infinite;
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: tick 20s linear infinite;
+}
+
+.money-strip-set {
+  flex: 0 0 auto;
+  min-width: max-content;
 }
 
 .nav-marquee-track {
@@ -52,7 +60,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .money-strip-track {
-    animation-duration: 24s;
+    animation-duration: 30s;
   }
   .nav-marquee-track {
     animation-duration: 18s;
