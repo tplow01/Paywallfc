@@ -90,27 +90,37 @@ function AnimatedTotal({ value, format = fmtR, className, highlight }) {
 }
 
 function AnimatedCountUp({ target, className, suffix = "" }) {
-  const [display, setDisplay] = useState(0);
+  const [display, setDisplay]     = useState(0);
+  const [triggered, setTriggered] = useState(false);
+  const ref = useRef(null);
 
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setTriggered(true); observer.disconnect(); } },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!triggered) return;
     let raf = 0;
     const start = performance.now();
-    const duration = 1600;
-    const from = 0;
     const to = Math.max(0, Math.round(target));
-
     const tick = (now) => {
-      const t = Math.min(1, (now - start) / duration);
+      const t = Math.min(1, (now - start) / 1800);
       const eased = 1 - Math.pow(1 - t, 3);
-      setDisplay(Math.round(from + (to - from) * eased));
+      setDisplay(Math.round(to * eased));
       if (t < 1) raf = requestAnimationFrame(tick);
     };
-
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [target]);
+  }, [triggered, target]);
 
-  return <span className={className}>{`£${numFmt(display)}${suffix}`}</span>;
+  return <span ref={ref} className={className}>{`£${numFmt(display)}${suffix}`}</span>;
 }
 function formatDate(d) {
   return new Date(d).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
@@ -596,7 +606,8 @@ export default function Landing() {
           <div className="text-center">
             <motion.div
               initial={{ y: 120, opacity: 0, scale: 0.92 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
+              whileInView={{ y: 0, opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
               className="font-display font-black uppercase mx-auto"
               style={{
@@ -631,11 +642,11 @@ export default function Landing() {
                 tone: "text-brand-text",
               },
             ].map((stat) => (
-              <div key={stat.label} className="col-span-12 md:col-span-4 border p-4" style={{ borderColor: "rgba(223,235,247,0.12)", background: "rgba(223,235,247,0.02)" }}>
-                <div className="font-display font-semibold text-[10px] tracking-[2px] uppercase mb-2" style={{ color: "rgba(223,235,247,0.45)" }}>
+              <div key={stat.label} className="col-span-12 md:col-span-4 p-6 md:p-8" style={{ borderTop: "3px solid rgba(254,209,7,0.5)", background: "rgba(254,209,7,0.04)" }}>
+                <div className="font-display font-semibold text-[11px] tracking-[2.5px] uppercase mb-3" style={{ color: "rgba(223,235,247,0.5)" }}>
                   {stat.label}
                 </div>
-                <div className={`font-display font-black text-[30px] leading-none ${stat.tone}`}>{stat.value}</div>
+                <div className={`font-display font-black leading-none ${stat.tone}`} style={{ fontSize: "clamp(2.4rem,5vw,56px)" }}>{stat.value}</div>
               </div>
             ))}
           </div>
@@ -712,12 +723,12 @@ export default function Landing() {
                 fg: "#111011",
               },
             ].map((d) => (
-              <div key={d.num} className="stat-card w-full px-6 md:px-10 lg:px-14 py-8 md:py-10 border-b" style={{ background: d.bg, color: d.fg, borderColor: d.bg === "#0a0a0a" ? "rgba(223,235,247,0.1)" : "rgba(0,0,0,0.18)" }}>
-                <div className="max-w-[1440px] mx-auto grid grid-cols-12 gap-6 items-start">
-                  <div className="col-span-12 md:col-span-2 font-display font-black text-6xl md:text-7xl leading-none opacity-80">{d.num}</div>
+              <div key={d.num} className="stat-card w-full flex items-center px-6 md:px-10 lg:px-14 py-16 md:py-20 border-b" style={{ minHeight: "33.333vh", background: d.bg, color: d.fg, borderColor: d.bg === "#0a0a0a" ? "rgba(223,235,247,0.1)" : "rgba(0,0,0,0.18)" }}>
+                <div className="max-w-[1440px] mx-auto w-full grid grid-cols-12 gap-6 items-center">
+                  <div className="col-span-12 md:col-span-2 font-display font-black leading-none opacity-60" style={{ fontSize: "clamp(5rem,10vw,140px)" }}>{d.num}</div>
                   <div className="col-span-12 md:col-span-10">
-                    <h3 className="font-display font-black uppercase mb-3 text-[27px] md:text-[34px] leading-[1.05]">{d.title}</h3>
-                    <p className="text-[15px] md:text-[17px] leading-[26px] md:leading-[30px] opacity-90 max-w-5xl">{d.body}</p>
+                    <h3 className="font-display font-black uppercase mb-4 leading-[1.0]" style={{ fontSize: "clamp(2rem,5.5vw,72px)" }}>{d.title}</h3>
+                    <p className="opacity-80 max-w-4xl" style={{ fontSize: "clamp(1rem,1.8vw,22px)", lineHeight: "1.6" }}>{d.body}</p>
                   </div>
                 </div>
               </div>
